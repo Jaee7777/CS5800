@@ -1,5 +1,5 @@
 # CS5800 2024 Fall
-Store homework and practice files. Python ran on linux command line is default.
+Store homework and practice files. Python ran on linux command line is default. Check corresponding yml file to check env for each src files.
 
 ## hw02
 
