@@ -24,5 +24,5 @@ for a_i in A:
         if a_i > B[j]:
             E += 1  # add a count to E when critical condition is met.
 
-print(f"Array A is {A}, and t is t {args.t}")
+print(f"Array A is {A}, and t is {args.t}")
 print(f"There are {E} critical events in array A")
