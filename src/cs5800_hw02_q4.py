@@ -1,3 +1,7 @@
+# git@github.com:Jaee7777/CS5800.git
+# check the above github repo for the source code and make file.
+# ./src/cs5800_hw02_q4.py describes following code.
+# check Makefile under 'Q4' command to check which input I used.
 import numpy as np
 import argparse
 
