@@ -5,28 +5,18 @@ Store homework and practice files
 Q4
 
 Consider an array, 
-A
 A, whose contents is integer values. Given a particular threshold value 
-t
 t, an event 
-E
 E between indices 
-i
-<
-j
 i<j is a critical event if 
-a
-i
+a_i
 \>
 t
 ∗
-a
-j
-a 
-i
+a_j
+a_i
 ​
-\>t∗a 
-j
+\>t∗a_j
 ​
  .
 
