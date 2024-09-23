@@ -9,11 +9,8 @@ A, whose contents is integer values. Given a particular threshold value
 t, an event 
 E between indices 
 i<j is a critical event if 
-a_i
-\>
-t
-∗
-a_j
+
+
 a_i
 ​
 \>t∗a_j
