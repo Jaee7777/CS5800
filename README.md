@@ -8,7 +8,11 @@ Consider an array,
 A, whose contents is integer values. Given a particular threshold value 
 t, an event 
 E between indices 
-i<j is a critical event if a_i>t∗a_j.
+i
+\<
+j is a critical event if a_i
+\>
+t∗a_j.
 
 In this problem, write a full program that outputs the number of critical events for an arbitrary array of integers and any arbitrary threshold value 
 t
