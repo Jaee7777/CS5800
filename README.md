@@ -1,9 +1,9 @@
-# CS5800 2024 Fall
+## CS5800 2024 Fall
 Store homework and practice files
 
-* hw02
-Q4
+# hw02
 
+* Q4
 Consider an array, 
 A, whose contents is integer values. Given a particular threshold value 
 t, an event 
