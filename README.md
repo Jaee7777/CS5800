@@ -1,10 +1,9 @@
 # CS5800 2024 Fall
 Store homework and practice files
 
-** hw02
+* hw02
 Q4
-20 Points
-Grading comment:
+
 Consider an array, 
 A
 A, whose contents is integer values. Given a particular threshold value 
@@ -18,7 +17,7 @@ j
 i<j is a critical event if 
 a
 i
->
+\>
 t
 ∗
 a
@@ -26,7 +25,7 @@ j
 a 
 i
 ​
- >t∗a 
+\>t∗a 
 j
 ​
  .
