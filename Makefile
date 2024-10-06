@@ -8,3 +8,6 @@ hw02_q04:
 hw03_q04:
 	python -B src/cs5800_hw03_q4.py
 	
+hw04_q03:
+	python -B src/cs5800_hw04_q3.py
+	
