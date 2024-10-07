@@ -22,4 +22,6 @@ class Solution:
 
 sol = Solution()
 A = [1, 2, 3, -4, 5]
+# A = [-2, -3, 4, -1, -2, 1, 5, -3]
+print(f"Input Array is : {A}")
 print(f"Max product of the array is : {sol.maxProduct(A)}")
