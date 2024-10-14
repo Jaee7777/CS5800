@@ -1,49 +1,54 @@
-def merge(p, q):
-    if p[0] <= q[0]:
-        return p + q
-    else:
-        return q + p
-    # restore the heap order
+import math
 
 
-def deleteMin(p):
-    # find the last non-empty node.
-    i = -1
-    while p[i] is None:
-        i -= 1
-    # swap the first and the last non-empty nodes
-    p[0], p[i] = p[i], p[0]
-    p.pop(i)
-    p.append(None)
-    # restore the heap order.
-    return p[0]
+class Node:
+    def __init__(self, value):
+        self.parent = None
+        self.child = None
+        self.value = value
+        self.index = 0
 
 
-def insert(p, n):
-    # replace the empty slot to 'n', if p[-1] is an empty slot.
-    if p[-1] is None:
-        p.pop()
-        p.append(n)
-    # restore the heap order.
-    heap_order(p)
-    return
+class BinomialTree:
+    def __init__(self, tree):
+        self.tree = tree
+        self.root = tree[0]
+        self.depth = int(math.log(len(tree), 2))
+        # create corresponding nodes for each element.
+        self.nodes = []
+        [self.nodes.append(Node(x)) for x in self.tree]
+        self.junk = []
+
+    # connect each node to a binomial tree from by running this .
+    def connect_nodes(self):
+        self.nodes[1].parent = self.nodes[0].index
+        for x in range(0, self.depth):
+            self.junk.append(x)
+        return
+
+    def merge(self, other_nodes):
+        if self.root <= other_nodes.root:
+            other_nodes[0].parent = self.nodes[0].index
+        else:
+            self.nodes[0].parent = other_nodes[0].index
+        pass
+
+    def deleteMin(self):
+        print("hi")
+        pass
+
+    def insert(self, n):
+        pass
+
+    def HeapOrder(self):
+        pass
 
 
-def heap_order(A):
-    # let r is the root, and c is the cursor.
-    c = -1
-    # search for the last non-empty element.
-    while A[c] is None:
-        c -= 1
-    l = len(A) + c + 1  # lenght of the non-empty array
-    return
-
-
-A = [1, 3, 2, 8]
-B = [5, 4, 7, 9, None, None]
-print(merge(B, A))
-print(deleteMin(A), "deleteMin")
-print(A)
-
-insert(B, 11)
-print(B)
+if __name__ == "__main__":
+    input = [7, 8, 12, 13]
+    x = BinomialTree(input)
+    print(x, x.depth, x.nodes, x.root, x.depth)
+    print(x.junk)
+    x.connect_nodes
+    print(x.junk)
+    print(x.nodes[0].parent)
