@@ -44,6 +44,10 @@ class BinomialTree:
         len_level = self.len
         while len_level > 1:
             for i in range(0, len_level // 2):
+                print(
+                    i,
+                    i + len_level // 2,
+                )
                 self.nodes[i].connect(self.nodes[i + len_level // 2])
             len_level = len_level // 2
 
@@ -56,6 +60,7 @@ class BinomialTree:
         for n in self.array:
             self.nodes[i].value = n
             i += 1
+        print(self.root.child[2].value, "child")
 
     def update(self):
         # update depth and length based on the node structure.
@@ -125,6 +130,36 @@ class BinomialTree:
         if self.depth == 0:
             return
 
+        for node in self.nodes[::-1]:
+            if node.parent is None or node.parent.value is None:
+                continue
+
+            while node.value < node.parent.value:
+                if node.value is None:
+                    continue  # no need to swap if the child is empty.
+
+                # swap if the child is smaller than the parent,
+                # or the parent is empty.
+                node.parent.value, node.value = node.value, node.parent.value
+
+                # let the current parent node be the child node for the next.
+                node = node.parent
+
+                if node.parent is None:
+                    break
+
+                if node.parent.value is None:
+                    break
+
+        # assign values with correct order in the array.
+        i = 0
+        for node in self.nodes:
+            self.array[i] = node.value
+            i += 1
+        return
+
+
+"""
         # initialize for the root node.
         parent_node = self.root
         child_values = [
@@ -138,6 +173,9 @@ class BinomialTree:
 
         # compare the values of the parent node and the minimum child node.
         while parent_node.value > child_min_value:
+            print(len(self.root.child))
+            print(child_values)
+            print(parent_node.value, child_min_value, "heaporder: parend, child min")
             # find the index for where the minimum child value exists.
             i = 0
             while parent_node.child[i].value != child_min_value:
@@ -157,22 +195,33 @@ class BinomialTree:
             if child_values == []:
                 break
             child_min_value = min(child_values)
-        return
 
+        # assign values with correct order in the array.
+        i = 0
+        for node in self.nodes:
+            self.array[i] = node.value
+            i += 1
+        return
+"""
 
 if __name__ == "__main__":
-    input = [7, 8, 12]
-    input2 = [1, 100, 3, 4]
+    input = [7, 8, 12, 166, 1, 34, 15]
+    input2 = [1, 100, 3, 4, 2, 1234, 566]
     a = BinomialTree(input)
     b = BinomialTree(input2)
+    print(a.array, b.array)
+    print([node.value for node in a.nodes])
 
-    a.insert(254)
+    a.insert(11)
+    print([node.value for node in a.nodes])
+    print(a.array)
     print(a.tail.value, "insert in a")
 
     print(a.root, a.tail, a.root.value, a.tail.value, "root and tail of a before merge")
 
     print(a.depth, a.len, "depth and length of abefore merge")
     dd = a.merge(b)
+    print(dd.array)
     print(a.root.value, a.tail.value, "root and tail of a after merge")
 
     print(dd.root.value, dd.tail.value, "root and tail of a.merge assigned to dd")
@@ -186,3 +235,5 @@ if __name__ == "__main__":
 
     dd.insert(123)
     print(dd.tail.value, "tail after insert 123")
+
+    print(dd.array)
