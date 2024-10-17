@@ -131,9 +131,10 @@ class BinomialTree:
             child.value for child in self.root.child if child.value is not None
         ]
 
-        # make sure the child values of the root node have numerical values.
-        if child_values != []:
-            child_min_value = min(child_values)
+        # stop HeapOrder if the root does not have any numerical child values.
+        if child_values == []:
+            return
+        child_min_value = min(child_values)
 
         # compare the values of the parent node and the minimum child node.
         while parent_node.value > child_min_value:
