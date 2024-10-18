@@ -13,7 +13,6 @@ class Node:
         self.parent = None
         self.child = []
         self.value = value
-        self.index = 0
 
     # create a connection between two nodes. 'other_node' is a child of 'self'.
     def connect(self, other_node):
@@ -58,42 +57,20 @@ class BinomialTree:
             self.nodes[i].value = n
             i += 1
 
-    def HeapOrder(self):
-        """
-        for node in self.nodes[::-1]:
-            if node.parent is None or node.parent.value is None:
-                continue
-
-            while node.value < node.parent.value:
-                if node.value is None:
-                    continue  # no need to swap if the child is empty.
-
-                # swap if the child is smaller than the parent,
-                # or the parent is empty.
-                node.parent.value, node.value = node.value, node.parent.value
-
-                # let the current parent node be the child node for the next.
-                node = node.parent
-
-                if node.parent is None:
-                    break
-
-                if node.parent.value is None:
-                    break
-        """
-        # assign values with correct order in the array.
+    def update(self):
+        # update the array form using the nodes.
         i = 0
         for node in self.nodes:
             self.array[i] = node.value
             i += 1
         return
 
-        # sort the empty binomial tree with a correct order.
-
     def merge(self, other_tree):
-        # if other_tree has smaller root, swap self and other_tree.
+        # if other_tree has smaller root, call merge on other_tree.
         if other_tree.root.value < self.root.value:
-            self, other_tree = other_tree, self
+            other_tree.merge(self)
+            print("The merge is done on the input tree instead")
+            return
 
         # connect the nodes.
         self.root.connect(other_tree.root)
@@ -117,58 +94,80 @@ class BinomialTree:
         # initialize the array with correct length.
         self.array = self.array + other_tree.array
 
-        # restore heap order.
-        self.HeapOrder()
+        # assign values with correct order in the array.
+        self.update()
         return
 
     def deleteMin(self):
+        # min element to return.
+        result_min_value = self.root.value
+
         # swap the values of the root node and thet tail node.
         self.root.value, self.tail.value = self.tail.value, self.root.value
 
-        # remove the value of the tail node
+        # remove the value of the tail node, and mark empty as None.
         self.tail.value = None
 
-        # restore heap order
-        self.HeapOrder()
-        return
+        # restore heap order, top to bottom.
+        cursor = self.root
+        # find minimum value among the child nodes.
+        min_child_value = min([x.value for x in cursor.child])
+        while cursor.child != [] and cursor.value > min_child_value:
+            # find the node that has the minimum value.
+            min_child = cursor.child[0]
+            i = 0
+            while min_child.value != min_child_value and i < len(cursor.child):
+                min_child = cursor.child[i]
+                i += 1
+            # swap cursor value with the minimum child node value.
+            cursor.value, min_child.value = min_child.value, cursor.value
+            # set cursor to be the swapped child node.
+            cursor = min_child
+
+        # update the array form.
+        self.update()
+        return result_min_value
 
     def insert(self, n):
         # insert to the value to the tail node if its value is None.
         if self.tail.value is None:
             self.tail.value = n
 
-            # restore heap order
-            self.HeapOrder()
+            # restore heap order, bottom to top.
+            cursor = self.tail
+            while cursor.value < cursor.parent.value:
+                cursor.value, cursor.parent.value = cursor.parent.value, cursor.value
+                cursor = cursor.parent
+
+                # breaek the while loop if the cursor reaches the root node.
+                if cursor == self.root:
+                    break
+
+            # update the array form.
+            self.update()
         else:
             print("The tail node is not empty.")
         return
 
 
 if __name__ == "__main__":
-    input = [100, 7, 30, 1]
-    input_2 = [345, 1346, 34551, 25477]
-    a = Node()
-    tree = a.create_empty_BinomialTree(3)
-    i = 0
-    for node in tree:
-        print("node number ", i, " is : ", node, node.parent, node.child)
-        i += 1
+    input_1 = [7, 12, 8, 13]
+    input_2 = [3, 5, 4, 9]
+    p = BinomialTree(input_1)
+    q = BinomialTree(input_2)
+    print("p is : ", p.array)
+    print("q is : ", q.array)
 
-    tree2 = BinomialTree(input)
-    print(tree2.array)
-    tree2.HeapOrder()
-    print(tree2.array)
-    tree2.HeapOrder()
-    print(tree2.array)
-    tree2.HeapOrder()
-    print(tree2.array)
+    deleted_min = p.deleteMin()
+    print("p after deleteMin(p) is : ", p.array)
+    print("deleted min value from p is : ", deleted_min)
 
-    tree_1 = BinomialTree(input)
-    tree_2 = BinomialTree(input_2)
-    print(tree_1.array, "tree 1")
-    tree_1.deleteMin()
-    print(tree_1.array)
-    tree_1.insert(0)
-    print(tree_1.array, tree_2.array)
-    tree_1.merge(tree_2)
-    print(tree_1.array)
+    p.insert(6)
+    print("p after insert(p,6) is : ", p.array)
+
+    print("p before merge(p,q) is : ", p.array)
+    print("q before merge(p,q) is : ", q.array)
+    p.merge(q)
+    # q.merge(p)
+    print("p after merge(p,q) is : ", p.array)
+    print("q after merge(p,q) is : ", q.array)
