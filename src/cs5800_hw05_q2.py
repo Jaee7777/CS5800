@@ -1,4 +1,5 @@
 from math import log, factorial
+from copy import deepcopy
 
 
 # function for the number of combinations.
@@ -7,7 +8,7 @@ def comb(n, h):
 
 
 class Node:
-    # initialize a node.
+    # initialize a node. default value is None.
     def __init__(self, value=None):
         self.parent = None
         self.child = []
@@ -20,47 +21,94 @@ class Node:
         other_node.parent = self
         return
 
+    # create an empty binomial tree with a given depth. self is the root node.
+    def create_empty_BinomialTree(self, depth):
+        tree_result = [self, Node()]  # initialize with tree of h = 1.
+        self.connect(tree_result[-1])  # make initial connection between nodes.
+        for h in range(1, depth):
+            tree_other = deepcopy(tree_result)  # create a deep copy.
+            tree_result[0].connect(tree_other[0])  # connect the root nodes.
+            tree_result = self.sort_empty_tree(tree_result, tree_other, h)
+        return tree_result
+
+    # sort the empty binomial tree with a correct order.
+    def sort_empty_tree(self, tree1, tree2, h):  # h is depth of input trees.
+        tree_result = [tree1.pop(0)]  # place the root node.
+        for i in range(1, h + 1):  # place nodes on level i.
+            for x in range(0, comb(h, i - 1)):
+                tree_result.append(tree2.pop(0))
+            for y in range(0, comb(h, i)):
+                tree_result.append(tree1.pop(0))
+        tree_result.append(tree2.pop(0))  # place the tail node.
+        return tree_result
+
 
 class BinomialTree:
     def __init__(self, array):
-        # if the input's length is not 2^n, fill remaining elements to be None.
-        if log(len(array), 2) - int(log(len(array), 2)) != 0:
-            N_total = 2 ** round(log(len(array), 2) + 0.5)
-            self.array = array
-            for i in range(0, N_total - len(array)):
-                self.array.append(None)
-
-        # otherwise, simply assign array directly into the tree.
-        else:
-            self.array = array
-
-        self.len = len(self.array)
-        self.depth = int(log(self.len, 2))  # make sure the depth is an integer
-
-        # create empty nodes.
-        self.nodes = [Node() for i in range(self.len)]
-
-        # make connections to the empty nodes to create a tree structure.
-        len_level = self.len
-        while len_level > 1:
-            for i in range(0, len_level // 2):
-                print(
-                    i,
-                    i + len_level // 2,
-                )
-                self.nodes[i].connect(self.nodes[i + len_level // 2])
-            len_level = len_level // 2
-
-        # assign a root node and a tail node.
-        self.root = self.nodes[0]
+        self.array = array
+        self.len = len(array)
+        self.depth = int(log(self.len, 2))  # make sure the depth is an integer.
+        self.root = Node()  # create a root node.
+        self.nodes = self.root.create_empty_BinomialTree(self.depth)
         self.tail = self.nodes[-1]
 
-        # assign values to the nodes.
+        # assign values from array to nodes.
         i = 0
-        for n in self.array:
+        for n in array:
             self.nodes[i].value = n
             i += 1
-        print(self.root.child[2].value, "child")
+
+    def HeapOrder(self):
+        for node in self.nodes[::-1]:
+            if node.parent is None or node.parent.value is None:
+                continue
+
+            while node.value < node.parent.value:
+                if node.value is None:
+                    continue  # no need to swap if the child is empty.
+
+                # swap if the child is smaller than the parent,
+                # or the parent is empty.
+                node.parent.value, node.value = node.value, node.parent.value
+
+                # let the current parent node be the child node for the next.
+                node = node.parent
+
+                if node.parent is None:
+                    break
+
+                if node.parent.value is None:
+                    break
+
+        # assign values with correct order in the array.
+        i = 0
+        for node in self.nodes:
+            self.array[i] = node.value
+            i += 1
+        return
+
+    def merge_empty_nodes(self, other_tree):
+        # merge only when the depths are the same.
+        if self.depth != other_tree.depth:
+            print("The depths of the trees do not match")
+            return
+
+        # connect the root nodes
+        self.root.connect(other_tree.root)
+
+        # relocate the nodes into the correct order.
+        nodes_result = []
+        for h in range(0, self.depth + 1):
+            if h == self.depth + 1:
+                pass
+            for x in range(0, comb(self.depth, h)):
+                if h == 0:
+                    pass
+                for y in range(0, comb(self.depth, h - 1)):
+                    nodes_result.append(other_tree.nodes.pop(0))
+                nodes_result.append(self.nodes.pop(0))
+        self.nodes = nodes_result
+        return
 
     def update(self):
         # update depth and length based on the node structure.
@@ -125,115 +173,21 @@ class BinomialTree:
             print("The tail node is not empty.")
         return
 
-    def HeapOrder(self):
-        # if the depth is zero, there is only one node, so no need to run HeapOrder.
-        if self.depth == 0:
-            return
-
-        for node in self.nodes[::-1]:
-            if node.parent is None or node.parent.value is None:
-                continue
-
-            while node.value < node.parent.value:
-                if node.value is None:
-                    continue  # no need to swap if the child is empty.
-
-                # swap if the child is smaller than the parent,
-                # or the parent is empty.
-                node.parent.value, node.value = node.value, node.parent.value
-
-                # let the current parent node be the child node for the next.
-                node = node.parent
-
-                if node.parent is None:
-                    break
-
-                if node.parent.value is None:
-                    break
-
-        # assign values with correct order in the array.
-        i = 0
-        for node in self.nodes:
-            self.array[i] = node.value
-            i += 1
-        return
-
-
-"""
-        # initialize for the root node.
-        parent_node = self.root
-        child_values = [
-            child.value for child in self.root.child if child.value is not None
-        ]
-
-        # stop HeapOrder if the root does not have any numerical child values.
-        if child_values == []:
-            return
-        child_min_value = min(child_values)
-
-        # compare the values of the parent node and the minimum child node.
-        while parent_node.value > child_min_value:
-            print(len(self.root.child))
-            print(child_values)
-            print(parent_node.value, child_min_value, "heaporder: parend, child min")
-            # find the index for where the minimum child value exists.
-            i = 0
-            while parent_node.child[i].value != child_min_value:
-                i += 1
-
-            # perform parent-child value swap
-            parent_node.value, parent_node.child[i].value = (
-                parent_node.child[i].value,
-                parent_node.value,
-            )
-
-            # let the minimum value child node to be the next parent node.
-            parent_node = parent_node.child[i]
-            child_values = [child.value for child in parent_node.child]
-
-            # break the loop if there is no more numerical values to compare.
-            if child_values == []:
-                break
-            child_min_value = min(child_values)
-
-        # assign values with correct order in the array.
-        i = 0
-        for node in self.nodes:
-            self.array[i] = node.value
-            i += 1
-        return
-"""
 
 if __name__ == "__main__":
-    input = [7, 8, 12, 166, 1, 34, 15]
-    input2 = [1, 100, 3, 4, 2, 1234, 566]
-    a = BinomialTree(input)
-    b = BinomialTree(input2)
-    print(a.array, b.array)
-    print([node.value for node in a.nodes])
+    input = [100, 7, 30, 1]
+    a = Node()
+    tree = a.create_empty_BinomialTree(3)
+    i = 0
+    for node in tree:
+        print("node number ", i, " is : ", node, node.parent, node.child)
+        i += 1
 
-    a.insert(11)
-    print([node.value for node in a.nodes])
-    print(a.array)
-    print(a.tail.value, "insert in a")
-
-    print(a.root, a.tail, a.root.value, a.tail.value, "root and tail of a before merge")
-
-    print(a.depth, a.len, "depth and length of abefore merge")
-    dd = a.merge(b)
-    print(dd.array)
-    print(a.root.value, a.tail.value, "root and tail of a after merge")
-
-    print(dd.root.value, dd.tail.value, "root and tail of a.merge assigned to dd")
-    print(dd.root.child)
-
-    print(dd.root, dd.root.child, "dd root child")
-    dd.deleteMin()
-    print(dd.root.value, dd.tail.value, "root, tail after delete min")
-
-    print(dd.tail.value, "tail value")
-
-    dd.insert(123)
-    print(dd.tail.value, "tail after insert 123")
-
-    print(dd.array)
+    tree2 = BinomialTree(input)
+    print(tree2.array)
+    tree2.HeapOrder()
+    print(tree2.array)
+    tree2.HeapOrder()
+    print(tree2.array)
+    tree2.HeapOrder()
+    print(tree2.array)
