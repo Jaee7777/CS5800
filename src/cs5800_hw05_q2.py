@@ -47,7 +47,7 @@ class BinomialTree:
     def __init__(self, array):
         self.array = array
         self.len = len(array)
-        self.depth = int(log(self.len, 2))  # make sure the depth is an integer.
+        self.depth = int(log(self.len, 2))  # make sure the depth is integer.
         self.root = Node()  # create a root node.
         self.nodes = self.root.create_empty_BinomialTree(self.depth)
         self.tail = self.nodes[-1]
@@ -59,6 +59,7 @@ class BinomialTree:
             i += 1
 
     def HeapOrder(self):
+        """
         for node in self.nodes[::-1]:
             if node.parent is None or node.parent.value is None:
                 continue
@@ -79,7 +80,7 @@ class BinomialTree:
 
                 if node.parent.value is None:
                     break
-
+        """
         # assign values with correct order in the array.
         i = 0
         for node in self.nodes:
@@ -87,69 +88,38 @@ class BinomialTree:
             i += 1
         return
 
-    def merge_empty_nodes(self, other_tree):
-        # merge only when the depths are the same.
-        if self.depth != other_tree.depth:
-            print("The depths of the trees do not match")
-            return
-
-        # connect the root nodes
-        self.root.connect(other_tree.root)
-
-        # relocate the nodes into the correct order.
-        nodes_result = []
-        for h in range(0, self.depth + 1):
-            if h == self.depth + 1:
-                pass
-            for x in range(0, comb(self.depth, h)):
-                if h == 0:
-                    pass
-                for y in range(0, comb(self.depth, h - 1)):
-                    nodes_result.append(other_tree.nodes.pop(0))
-                nodes_result.append(self.nodes.pop(0))
-        self.nodes = nodes_result
-        return
-
-    def update(self):
-        # update depth and length based on the node structure.
-        self.depth = 0
-        cursor = self.root
-        while cursor.child != []:
-            self.depth += 1
-            cursor = cursor.child[-1]
-        self.len = 2**self.depth
-        return
+        # sort the empty binomial tree with a correct order.
 
     def merge(self, other_tree):
-        # make sure the merged trees have the same depth.
-        if self.depth != other_tree.depth:
-            print(
-                "Merge is not performed "
-                + "because the depth of the trees do not match"
-            )
-            return self
+        # if other_tree has smaller root, swap self and other_tree.
+        if other_tree.root.value < self.root.value:
+            self, other_tree = other_tree, self
 
-        # determine which tree has a smaller root node.
-        if self.root.value <= other_tree.root.value:
-            tree_small = self
-            tree_big = other_tree
-        else:
-            tree_small = other_tree
-            tree_big = self
+        # connect the nodes.
+        self.root.connect(other_tree.root)
 
-        # make connection between the root nodes.
-        tree_small.root.child.append(tree_big.root)
-        tree_big.root.parent = tree_small.root
+        # place nodes into corret order.
+        nodes_result = [self.nodes.pop(0)]  # place the root node.
+        for i in range(1, self.depth + 1):  # place nodes on level i.
+            for x in range(0, comb(self.depth, i - 1)):
+                nodes_result.append(other_tree.nodes.pop(0))
+            for y in range(0, comb(self.depth, i)):
+                nodes_result.append(self.nodes.pop(0))
+        nodes_result.append(other_tree.nodes.pop(0))  # place the tail node.
 
-        # update the tail node.
-        tree_small.tail = tree_big.tail
+        # update attrs of self after the merge.
+        self.nodes = nodes_result
+        self.root = nodes_result[0]
+        self.tail = nodes_result[-1]
+        self.depth = self.depth + 1
+        self.len = 2**self.depth
 
-        # update the length and depth of the tree.
-        tree_small.update()
+        # initialize the array with correct length.
+        self.array = self.array + other_tree.array
 
-        # restore the heap order.
-        tree_small.HeapOrder()
-        return tree_small
+        # restore heap order.
+        self.HeapOrder()
+        return
 
     def deleteMin(self):
         # swap the values of the root node and thet tail node.
@@ -176,6 +146,7 @@ class BinomialTree:
 
 if __name__ == "__main__":
     input = [100, 7, 30, 1]
+    input_2 = [345, 1346, 34551, 25477]
     a = Node()
     tree = a.create_empty_BinomialTree(3)
     i = 0
@@ -191,3 +162,13 @@ if __name__ == "__main__":
     print(tree2.array)
     tree2.HeapOrder()
     print(tree2.array)
+
+    tree_1 = BinomialTree(input)
+    tree_2 = BinomialTree(input_2)
+    print(tree_1.array, "tree 1")
+    tree_1.deleteMin()
+    print(tree_1.array)
+    tree_1.insert(0)
+    print(tree_1.array, tree_2.array)
+    tree_1.merge(tree_2)
+    print(tree_1.array)
