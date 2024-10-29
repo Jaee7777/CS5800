@@ -41,6 +41,8 @@ def PARTITION(A, p, c):
 
 
 A = [3, 1, 5, 7, 6, 2, 4]
+# A = [4, 1, 3, 2, 16, 9, 10, 14, 8, 7]
+# A = [2, 4, 6, 8, 10, 12, 14, 1, 3, 5, 7, 9, 11, 13, 15]
 print(f"Input array is :{A}")
 comp = HUNGARIAN_QUICKSORT(A, 0, len(A) - 1)
 print(f"Output array is : {A}")
