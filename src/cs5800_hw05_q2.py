@@ -8,8 +8,8 @@ def comb(n, h):
 
 
 class Node:
-    # initialize a node. default value is None.
-    def __init__(self, value=None):
+    # initialize a node. default value is float("inf").
+    def __init__(self, value=float("inf")):
         self.parent = None
         self.child = []
         self.value = value
@@ -69,8 +69,7 @@ class BinomialTree:
         # if other_tree has smaller root, call merge on other_tree.
         if other_tree.root.value < self.root.value:
             other_tree.merge(self)
-            print("The merge is done on the input tree instead")
-            return
+            return False
 
         # connect the nodes.
         self.root.connect(other_tree.root)
@@ -102,11 +101,15 @@ class BinomialTree:
         # min element to return.
         result_min_value = self.root.value
 
-        # swap the values of the root node and thet tail node.
-        self.root.value, self.tail.value = self.tail.value, self.root.value
+        # remove the value of the tail node, and mark empty as float("inf").
+        i = -1
+        while self.nodes[i].value == float("inf"):
+            i -= 1
 
-        # remove the value of the tail node, and mark empty as None.
-        self.tail.value = None
+        # swap the values of the root node and thet tail node.
+        self.root.value, self.nodes[i].value = self.nodes[i].value, self.root.value
+        self.nodes[i].value = float("inf")
+        self.tail = self.nodes[i]
 
         # restore heap order, top to bottom.
         cursor = self.root
@@ -116,21 +119,23 @@ class BinomialTree:
             # find the node that has the minimum value.
             min_child = cursor.child[0]
             i = 0
-            while min_child.value != min_child_value and i < len(cursor.child):
-                min_child = cursor.child[i]
+            while min_child.value != min_child_value and i < len(cursor.child) - 1:
                 i += 1
+                min_child = cursor.child[i]
             # swap cursor value with the minimum child node value.
             cursor.value, min_child.value = min_child.value, cursor.value
             # set cursor to be the swapped child node.
             cursor = min_child
+            if cursor.child != []:
+                min_child_value = min([x.value for x in cursor.child])
 
         # update the array form.
         self.update()
         return result_min_value
 
     def insert(self, n):
-        # insert to the value to the tail node if its value is None.
-        if self.tail.value is None:
+        # insert to the value to the tail node if its value is float("inf").
+        if self.tail.value == float("inf"):
             self.tail.value = n
 
             # restore heap order, bottom to top.
@@ -150,24 +155,178 @@ class BinomialTree:
         return
 
 
+def merge(a, b):
+    Tree_a = BinomialTree(a)
+    Tree_b = BinomialTree(b)
+    check = Tree_a.merge(Tree_b)
+    if check is False:
+        return Tree_b.array
+    else:
+        return Tree_a.array
+
+
+def deleteMin(a):
+    Tree_a = BinomialTree(a)
+    return Tree_a.deleteMin()
+
+
+def insert(a):
+    Tree_a = BinomialTree(a)
+    Tree_a.insert()
+    return Tree_a.array
+
+
 if __name__ == "__main__":
-    input_1 = [7, 12, 8, 13]
-    input_2 = [3, 5, 4, 9]
-    p = BinomialTree(input_1)
-    q = BinomialTree(input_2)
-    print("p is : ", p.array)
-    print("q is : ", q.array)
+    ### Test merge
+    assert merge([1, 3], [0, 2]) == [0, 1, 2, 3]
+    print(merge([1, 3], [0, 2]))
+    assert merge([0, 2], [1, 3]) == [0, 1, 2, 3]
+    print(merge([0, 2], [1, 3]))
+    assert merge([0], [1]) == [0, 1]
+    print(merge([0], [1]))
+    assert merge([1], [0]) == [0, 1]
+    print(merge([1], [0]))
+    assert merge([7, 12, 8, 13], [3, 5, 4, 9]) == [3, 7, 5, 4, 12, 8, 9, 13]
+    print(merge([7, 12, 8, 13], [3, 5, 4, 9]))
+    assert merge([3, 5, 4, 9], [7, 12, 8, 13]) == [3, 7, 5, 4, 12, 8, 9, 13]
+    print(merge([3, 5, 4, 9], [7, 12, 8, 13]))
 
-    deleted_min = p.deleteMin()
-    print("p after deleteMin(p) is : ", p.array)
-    print("deleted min value from p is : ", deleted_min)
+    ### Test deleteMin
+    arr = [3, 5, 4, 9]
+    assert deleteMin(arr) == 3
+    assert arr == [4, 5, 9, float("inf")]
+    print(arr)
+    assert deleteMin(arr) == 4
+    print(arr)
+    assert arr == [5, 9, float("inf"), float("inf")]
+    assert deleteMin(arr) == 5
+    assert arr == [9, float("inf"), float("inf"), float("inf")]
+    arr = [3, 7, 5, 4, 12, 8, 9, 13]
+    assert deleteMin(arr) == 3
+    assert arr == [4, 7, 5, 13, 12, 8, 9, float("inf")]
+    assert deleteMin(arr) == 4
+    assert arr == [5, 7, 9, 13, 12, 8, float("inf"), float("inf")]
+    assert deleteMin(arr) == 5
+    assert arr == [7, 8, 9, 13, 12, float("inf"), float("inf"), float("inf")]
 
-    p.insert(6)
-    print("p after insert(p,6) is : ", p.array)
+    arr = [3, 4, 5, 7, 12, 8, 9, 13]
+    assert deleteMin(arr) == 3
+    assert arr == [4, 8, 5, 7, 12, 13, 9, float("inf")]
+    assert deleteMin(arr) == 4
+    assert arr == [5, 8, 9, 7, 12, 13, float("inf"), float("inf")]
+    assert deleteMin(arr) == 5
+    assert arr == [7, 8, 9, 13, 12, float("inf"), float("inf"), float("inf")]
 
-    print("p before merge(p,q) is : ", p.array)
-    print("q before merge(p,q) is : ", q.array)
-    p.merge(q)
-    # q.merge(p)
-    print("p after merge(p,q) is : ", p.array)
-    print("q after merge(p,q) is : ", q.array)
+    arr = merge([3, 4, 5, 7, 12, 8, 9, 13], [5, 6, 7, 9, 14, 10, 11, 15])
+    assert deleteMin(arr) == 3
+    assert arr == [4, 5, 8, 5, 7, 6, 7, 9, 12, 15, 9, 14, 10, 11, 13, float("inf")]
+    assert deleteMin(arr) == 4
+    print(arr)
+    assert arr == [
+        5,
+        6,
+        8,
+        5,
+        7,
+        10,
+        7,
+        9,
+        12,
+        15,
+        9,
+        14,
+        13,
+        11,
+        float("inf"),
+        float("inf"),
+    ]
+    assert deleteMin(arr) == 5
+    assert arr == [
+        5,
+        6,
+        8,
+        9,
+        7,
+        10,
+        7,
+        9,
+        12,
+        15,
+        11,
+        14,
+        13,
+        float("inf"),
+        float("inf"),
+        float("inf"),
+    ]
+
+    arr = merge([3, 4, 5, 7, 5, 8, 9, 6], [5, 6, 7, 9, 14, 10, 11, 15])
+    assert deleteMin(arr) == 3
+    assert arr == [4, 5, 5, 5, 7, 6, 7, 9, 6, 8, 9, 14, 10, 11, 15, float("inf")]
+    assert deleteMin(arr) == 4
+    assert arr == [
+        5,
+        6,
+        5,
+        5,
+        7,
+        10,
+        7,
+        9,
+        6,
+        8,
+        9,
+        14,
+        15,
+        11,
+        float("inf"),
+        float("inf"),
+    ]
+    assert deleteMin(arr) == 5
+    assert arr == [
+        5,
+        6,
+        6,
+        5,
+        7,
+        10,
+        7,
+        9,
+        11,
+        8,
+        9,
+        14,
+        15,
+        float("inf"),
+        float("inf"),
+        float("inf"),
+    ]
+
+    ### Test insert
+    arr = merge([3, 4, 5, 7, 5, 8, 9, 6], [5, 6, 7, 9, 14, 10, 11, 15])
+    deleteMin(arr)
+    deleteMin(arr)
+    deleteMin(arr)
+    insert(arr, 11)
+    assert arr == [
+        5,
+        6,
+        6,
+        5,
+        7,
+        10,
+        7,
+        9,
+        11,
+        8,
+        9,
+        14,
+        15,
+        11,
+        float("inf"),
+        float("inf"),
+    ]
+    insert(arr, 15)
+    assert arr == [5, 6, 6, 5, 7, 10, 7, 9, 11, 8, 9, 14, 15, 11, 15, float("inf")]
+    insert(arr, 7)
+    assert arr == [5, 6, 6, 5, 7, 7, 7, 9, 11, 8, 9, 10, 15, 11, 15, 14]
