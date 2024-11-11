@@ -1,0 +1,49 @@
+a context that will help me understand your chosen topic, with a clearly-
+defined question inspired by your issue with a rationale that explains what you are doing and
+why. I’d also like a couple of paragraphs where you tell me why this particular topic is important
+to you, and why each of you in the group is personally invested in answering this question
+
+Path finding with live traffic data/dynamic routing
+
+context
+
+question
+
+scope
+
+
+Probably use Dijkstra's algorithms
+A* algorithms
+
+* routing algorithms
+https://www.geeksforgeeks.org/classification-of-routing-algorithms/
+
+https://github.com/graphhopper/open-traffic-collection
+
+OSRM
+https://github.com/Project-OSRM/osrm-backend
+
+chicago
+https://data.cityofchicago.org/Transportation/Chicago-Traffic-Tracker-Congestion-Estimates-by-Se/n4j6-wkkf/about_data
+https://data.cityofchicago.org/api/assets/3F039704-BD76-4E6E-8E42-5F2BB01F0AF8
+
+real time traffic analysis and visualization
+https://github.com/AkashPushkar/real-time-traffic-analysis?tab=readme-ov-file
+
+* google map
+
+* Mapbox (update 5 min, data less than 15 min old, monthly typical data update.)
+https://www.mapbox.com/traffic-data
+https://docs.mapbox.com/data/traffic/guides/example/
+
+* TomTom
+https://www.tomtom.com/
+
+* Live Traffic data (usage based insurance)
+https://www.livetrafficdata.com/customers
+
+* Esri
+https://www.esri.com/en-us/home
+
+* HERE
+https://www.here.com/platform/traffic-solutions/real-time-traffic-information
